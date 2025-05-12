@@ -1,5 +1,6 @@
 import fs, { glob } from "fs";
 import path from "path";
+import chalk from "chalk";
 
 class Runner {
 	constructor() {
@@ -8,21 +9,27 @@ class Runner {
 
 	async runTest() {
 		for (let file of this.testFiles) {
-			const beforeEach = [];
+			console.log(chalk.gray(`-----${file.shortName}`));
+			const beforeEaches = [];
 			global.beforeEach = (fn) => {
-				beforeEach.push(fn);
+				beforeEaches.push(fn);
 			};
 			global.it = (desc, fn) => {
-				beforeEach.forEach((func) => func());
+				beforeEaches.forEach((func) => func());
 				try {
-					console.log(`OK- ${desc}`);
 					fn();
+					console.log(chalk.green(`OK - ${desc}`));
 				} catch (err) {
-					console.log(`X- ${desc}`);
-					console.log(err);
+					console.log(chalk.red(`X - ${desc}`));
+					console.log(chalk.red("\t", err.message));
 				}
 			};
-			import(file.name);
+
+			try {
+				import(file.name);
+			} catch (err) {
+				console.log(chalk.red(err));
+			}
 		}
 	}
 
@@ -34,7 +41,7 @@ class Runner {
 			const stats = await fs.promises.lstat(filePath);
 
 			if (stats.isFile() && file.includes(".test.js")) {
-				this.testFiles.push({ name: filePath });
+				this.testFiles.push({ name: filePath, shortName: file });
 			} else if (stats.isDirectory()) {
 				const childFiles = await fs.promises.readdir(filePath);
 
