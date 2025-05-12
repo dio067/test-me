@@ -1,2 +1,11 @@
 #!/usr/bin/env node
-console.log("Running")
+import Runner from "./runner.js";
+console.log("Running");
+
+const runner = new Runner();
+const run = async () => {
+	await runner.collectFiles(process.cwd());
+	console.log(runner.files);
+};
+
+run();
