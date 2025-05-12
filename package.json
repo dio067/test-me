@@ -11,5 +11,11 @@
 	"description": "",
 	"bin": {
 		"tme": "script.js"
+	},
+	"type": "module",
+	"dependencies": {
+		"chalk": "^5.4.1",
+		"jsdom": "^26.1.0",
+		"mocha": "^11.2.2"
 	}
 }
